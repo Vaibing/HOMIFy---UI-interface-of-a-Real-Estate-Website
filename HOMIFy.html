@@ -1,0 +1,425 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOMIFy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://images.wallpapersden.com/image/download/4k-city-with-darkness_bmZramqUmZqaraWkpJRobWllrWdmamc.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .listing, .form-container {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .listing img {
+            max-width: 100%;
+            height: auto;
+        }
+        .listing h2 {
+            margin: 0 0 10px;
+        }
+        .listing p {
+            color: #555;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="password"], input[type="file"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        label {
+            font-weight: bold;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .add-listing-btn, .auth-btn {
+            margin-bottom: 20px;
+        }
+        .contact-details {
+            margin-top: 10px;
+            color: #333;
+        }
+        .hidden {
+            display: none;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        .filter-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>HOMIFy</h1>
+    </header>
+    <main>
+        <section class="intro">
+            <h2 style="text-align: center;color: white">Welcome to HOMIFy</h2>
+            <p style="text-align: center;color: white">Your one-stop destination for buying and selling properties.</p>
+        </section>
+        <div class="container">
+            <!-- Authentication Button -->
+            <div class="auth-btn">
+                <button onclick="toggleAuthForm()">Sign In / Create Account</button>
+            </div>
+
+            <!-- Authentication Form (Hidden by default) -->
+            <div class="form-container hidden" id="authForm">
+                <h2 id="authFormTitle">Sign In</h2>
+                <form id="authFormElement">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+
+                    <div class="error" id="authError"></div>
+
+                    <button type="submit" id="authSubmitBtn">Sign In</button>
+                </form>
+                <p id="toggleAuth">Don't have an account? <a href="#" onclick="toggleSignUp()">Create one here</a>.</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <div class="filter-container">
+                    <select id="filter" onchange="updateFilterOptions()">
+                        <option value="none">Filter by</option>
+                        <option value="city">City</option>
+                        <option value="price">Price</option>
+                    </select>
+                    <select id="filterOptions" onchange="filterListings()">
+                        <option value="">Select an option</option>
+                    </select>
+                </div>
+                <input type="text" id="search" placeholder="Search properties by city or price">
+                <button onclick="filterListings()">Search</button>
+            </div>
+
+            <!-- Add Listing Button -->
+            <div class="add-listing-btn hidden" id="addListingBtn">
+                <button onclick="toggleForm()">Add New Listing</button>
+            </div>
+            <!-- Add Listing Form (Hidden by default) -->
+            <div class="add-listing-form hidden" id="addListingForm">
+                <h2 style="color:white;">Add a New Listing</h2>
+                <form id="listingForm">
+                    <label for="title" style="color: white;">Property Title:</label>
+
+                    <input type="text" id="title" name="title" required>
+
+                    <label for="description" style="color: white;">Description:</label>
+                    <textarea id="description" name="description" rows="4" required></textarea>
+
+                    <label for="price" style="color: white;">Price (e.g., ₹1,200,000):</label>
+                    <input type="text" id="price" name="price" required>
+
+                    <label for="city" style="color: white;">City:</label>
+                    <input type="text" id="city" name="city" required>
+
+                    <label for="image" style="color: white;">Image:</label>
+                    <input type="file" id="image" name="image" accept="image/*" required>
+
+                    <label for="contact" style="color: white;">Contact Details:</label>
+                    <input type="text" id="contact" name="contact" placeholder="e.g., email@example.com or phone number" required>
+
+                    <button type="submit" style="color: white;">Add Listing</button>
+                </form>
+            </div>
+
+            <!-- Listings -->
+            <div id="listings">
+                <!-- Real estate listings will be populated here -->
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>© 2024 BuySellHomes. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const listings = [
+            {   
+                id: 1,
+                title: "Luxury Apartment in Anna Nagar",
+                description: "Discover the epitome of modern luxury in this stunning apartment located in the prestigious neighborhood of Anna Nagar, Chennai.",
+                price: "₹1,52,00,0000",
+                city: "Chennai",
+                imageUrl: "https://www.chennaiproperties.in/projectsgallery/4653/gallery/Urbando_Gaiety_1.jpg",
+                contact: "casagrand.homes@chennaiapartments.com"
+            },
+            {
+                id: 2,
+                title: "Cozy House in Bangalore",
+                description: "Nestled in a serene neighborhood of Los Angeles, this cozy 3-bedroom house offers a perfect blend of comfort and charm, making it an ideal retreat from the bustling city life.",
+                price: "₹8,00,00,000",
+                city: "Bangalore",
+                imageUrl: "https://www.thejazminn.com/wp-content/uploads/2019/05/Home-Slide-3..jpg",
+                contact: "info@cozybanglorehomes.com"
+            },
+            {
+                id: 3,
+                title: "Modern Condo in Ashok Pillar",
+                description: "Experience contemporary urban living in this modern condo located in the vibrant Ashok Pillar area.",
+                price: "₹9,00,00,000",
+                city: "Chennai",
+                imageUrl: "https://orelpc.com/img/luxury-apartments-in-chennai.jpg",
+                contact: "sales@ashokpillarModern.com"
+            }
+        ];
+
+        function displayListings(displayArray) {
+            const listingsContainer = document.getElementById('listings');
+            listingsContainer.innerHTML = ''; // Clear previous listings
+            if(displayArray.length === 0){
+                listingsContainer.innerHTML = '<p>No listings found.</p>';
+                return;
+            }
+            displayArray.forEach(listing => {
+                const listingElement = document.createElement('div');
+                listingElement.classList.add('listing');
+                listingElement.innerHTML = `
+                    <img src="${listing.imageUrl}" alt="${listing.title}">
+                    <h2>${listing.title}</h2>
+                    <p>${listing.description}</p>
+                    <p><strong>Price:</strong> ${listing.price}</p>
+                    <p><strong>City:</strong> ${listing.city}</p>
+                    <p class="contact-details"><strong>Contact:</strong> ${listing.contact}</p>
+                    <button onclick="deleteListing(${listing.id})">Delete Listing</button>
+                `;
+                listingsContainer.appendChild(listingElement);
+            });
+        }
+
+        
+        // Updated Filter Options for Price Range
+        function updateFilterOptions() {
+            const filter = document.getElementById('filter').value;
+            const filterOptions = document.getElementById('filterOptions');
+            filterOptions.innerHTML = '<option value="">Select an option</option>'; // Clear previous options
+
+            if (filter === 'city') {
+                const cities = [...new Set(listings.map(listing => listing.city))];
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    filterOptions.appendChild(option);
+                });
+            } else if (filter === 'price') {
+                const priceRanges = [
+                    { label: 'Below ₹500,000', value: '0-500000' },
+                    { label: '₹500,000 - ₹1,000,000', value: '500000-1000000' },
+                    { label: '₹1,000,000 - ₹2,000,000', value: '1000000-2000000' },
+                    { label: 'Above ₹2,000,000', value: '2000000-99999999' }
+                ];
+                priceRanges.forEach(range => {
+                    const option = document.createElement('option');
+                    option.value = range.value;
+                    option.textContent = range.label;
+                    filterOptions.appendChild(option);
+                });
+            }
+        }
+
+        // Updated Filtering Logic
+        function filterListings() {
+            const searchValue = document.getElementById('search').value.toLowerCase().trim();
+            const filter = document.getElementById('filter').value;
+            const filterOptionValue = document.getElementById('filterOptions').value;
+
+            const filteredListings = listings.filter(listing => {
+                const matchesSearch = listing.city.toLowerCase().includes(searchValue) || listing.price.toLowerCase().includes(searchValue);
+                const matchesFilter = filter === 'none' || 
+                    (filter === 'city' && listing.city === filterOptionValue) ||
+                    (filter === 'price' && isWithinPriceRange(listing.price, filterOptionValue));
+                return matchesSearch && matchesFilter;
+            });
+
+            displayListings(filteredListings);
+        }
+
+        // Function to Check if Price is within the Selected Range
+        function isWithinPriceRange(price, range) {
+            const priceValue = parseInt(price.replace(/[₹,]/g, ''), 10); // Remove currency symbol and commas
+            const [min, max] = range.split('-').map(Number);
+
+            return priceValue >= min && priceValue <= (max || Infinity);
+        }
+
+
+        function toggleForm() {
+            const form = document.getElementById('addListingForm');
+            form.classList.toggle('hidden');
+        }
+
+        // Authentication Functions
+        function toggleAuthForm() {
+            const form = document.getElementById('authForm');
+            form.classList.toggle('hidden');
+        }
+
+        function toggleSignUp() {
+            const formTitle = document.getElementById('authFormTitle');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const toggleText = document.getElementById('toggleAuth');
+
+            if (formTitle.innerText === 'Sign In') {
+                formTitle.innerText = 'Create Account';
+                submitBtn.innerText = 'Create Account';
+                toggleText.innerHTML = 'Already have an account? <a href="#" onclick="toggleSignUp()">Sign in here</a>.';
+            } else {
+                formTitle.innerText = 'Sign In';
+                submitBtn.innerText = 'Sign In';
+                toggleText.innerHTML = 'Don\'t have an account? <a href="#" onclick="toggleSignUp()">Create one here</a>.';
+            }
+        }
+
+        document.getElementById('authFormElement').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const formTitle = document.getElementById('authFormTitle').innerText;
+
+            if (formTitle === 'Create Account') {
+                // Sign up
+                const existingUser = localStorage.getItem(username);
+                if (existingUser) {
+                    document.getElementById('authError').innerText = 'User already exists!';
+                    return;
+                }
+                localStorage.setItem(username, password);
+                alert('Account created successfully! Please sign in.');
+                toggleSignUp(); // Switch to sign-in form
+            } else {
+                // Sign in
+                const storedPassword = localStorage.getItem(username);
+                if (storedPassword === password) {
+                    alert('Login successful!');
+                    document.getElementById('authForm').classList.add('hidden');
+                    document.getElementById('addListingBtn').classList.remove('hidden');
+                } else {
+                    document.getElementById('authError').innerText = 'Invalid username or password.';
+                }
+            }
+        });
+
+        // Handle form submission for adding a listing
+        document.getElementById('listingForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form from submitting normally
+
+            // Get form values
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const price = document.getElementById('price').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+
+            // Handle image upload
+            const imageFile = document.getElementById('image').files[0];
+            if (!imageFile) {
+                alert('Please upload an image.');
+                return;
+            }
+            const imageUrl = URL.createObjectURL(imageFile);
+
+            // Create a new listing object
+            const newListing = {
+                id: listings.length + 1,
+                title,
+                description,
+                price,
+                city,
+                imageUrl,
+                contact
+            };
+
+            // Add the new listing to the listings array
+            listings.push(newListing);
+
+            // Display the updated listings
+            displayListings(listings);
+
+            // Clear the form
+            document.getElementById('listingForm').reset();
+            alert('New listing added successfully!');
+            toggleForm(); // Hide the form
+        });
+
+        // Function to delete a listing
+        function deleteListing(id) {
+            const confirmed = confirm("Are you sure you want to delete this listing?");
+            if (confirmed) {
+                const index = listings.findIndex(listing => listing.id === id);
+                if (index !== -1) {
+                    listings.splice(index, 1); // Remove the listing from the array
+                    displayListings(listings); // Refresh the display
+                }
+            }
+        }
+
+        // Initial load
+        displayListings(listings);
+    </script>
+</body>
+</html>
